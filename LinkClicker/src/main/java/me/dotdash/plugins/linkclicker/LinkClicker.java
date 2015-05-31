@@ -24,6 +24,7 @@
 
 package me.dotdash.plugins.linkclicker;
 
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.entity.player.PlayerChatEvent;
 import org.spongepowered.api.plugin.Plugin;
@@ -33,25 +34,22 @@ import org.spongepowered.api.text.action.TextActions;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-@Plugin(id = "dotdash-linkclicker", name = "LinkClicker", version = "1.0.0")
+@Plugin(id = "dotdash-linkclicker", name = "LinkClicker", version = "1.0.1")
 public class LinkClicker {
-    @Subscribe
+    @Subscribe(order = Order.LATE)
     public void onPlayerChat(PlayerChatEvent event) {
         String msg = Texts.toPlain(event.getMessage()).toLowerCase();
-        if(msg.contains("http://")) {
+        if(msg.contains("http://") || msg.contains("https://")) {
             String link;
-            if(msg.substring(msg.indexOf("http://")).contains(" ")) {
-                link = msg.substring(msg.indexOf("http://"), msg.indexOf(" ", msg.indexOf("http://")));
+            if(msg.substring(msg.indexOf("http")).contains(" ")) {
+                link = msg.substring(msg.indexOf("http"), msg.indexOf(" ", msg.indexOf("http")));
             } else {
-                link = msg.substring(msg.indexOf("http://"));
+                link = msg.substring(msg.indexOf("http"));
             }
-
-            if(event.getEntity().hasPermission("linkclicker.use")) {
-                try {
-                    event.setNewMessage(Texts.builder().append(event.getMessage()).onClick(TextActions.openUrl(new URL(link))).build());
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
+            try {
+                event.setNewMessage(Texts.builder().append(event.getMessage()).onClick(TextActions.openUrl(new URL(link))).build());
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
             }
         }
     }
