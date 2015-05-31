@@ -33,14 +33,19 @@ import org.spongepowered.api.text.action.TextActions;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-@Plugin(id = "dotdash-linkclicker", name = "LinkClicker", version = "1.0.1")
+@Plugin(id = "dotdash-linkclicker", name = "LinkClicker", version = "1.0.0")
 public class LinkClicker {
     @Subscribe
     public void onPlayerChat(PlayerChatEvent event) {
         String msg = Texts.toPlain(event.getMessage()).toLowerCase();
-        String link = msg.substring(msg.indexOf("http://"), msg.indexOf(" ", msg.indexOf("http://")));
-
         if(msg.contains("http://")) {
+            String link;
+            if(msg.substring(msg.indexOf("http://")).contains(" ")) {
+                link = msg.substring(msg.indexOf("http://"), msg.indexOf(" ", msg.indexOf("http://")));
+            } else {
+                link = msg.substring(msg.indexOf("http://"));
+            }
+
             if(event.getEntity().hasPermission("linkclicker.use")) {
                 try {
                     event.setNewMessage(Texts.builder().append(event.getMessage()).onClick(TextActions.openUrl(new URL(link))).build());
